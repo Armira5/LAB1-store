@@ -10,6 +10,7 @@ import IconButton  from "@/components/ui/icon-button";
 import usePreviewModal from "@/hooks/use-preview-modal";
 import useCart from "@/hooks/use-cart";
 import { Product } from "@/types";
+import { useSession } from "next-auth/react";
 
 interface ProductCard {
   data: Product
@@ -20,6 +21,7 @@ const ProductCard: React.FC<ProductCard> = ({
 }) => {
   const previewModal = usePreviewModal();
   const cart = useCart();
+  const session = useSession();
   const router = useRouter();
 
   const handleClick = () => {
@@ -34,8 +36,11 @@ const ProductCard: React.FC<ProductCard> = ({
 
   const onAddToCart: MouseEventHandler<HTMLButtonElement> = (event) => {
     event.stopPropagation();
-
-    cart.addItem(data);
+    if (session?.data?.user) {
+      cart.addItem(data, session?.data.user.email);
+    } else {
+      router.push("/api/auth/signin");
+    }
   };
   
   return ( 

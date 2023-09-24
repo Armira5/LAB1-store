@@ -6,6 +6,7 @@ import IconButton from "@/components/ui/icon-button";
 import Currency from "@/components/ui/currency";
 import useCart from "@/hooks/use-cart";
 import { Product } from "@/types";
+import { useSession } from "next-auth/react";
 
 
 interface CartItemProps {
@@ -15,10 +16,11 @@ interface CartItemProps {
 const CartItem: React.FC<CartItemProps> = ({
   data
 }) => {
+  const session = useSession();
   const cart = useCart();
 
   const onRemove = () => {
-    cart.removeItem(data.id);
+    cart.removeItem(data.id, session?.data?.user?.email);
   };
 
   return ( 
